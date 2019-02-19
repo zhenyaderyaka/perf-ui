@@ -48,6 +48,7 @@ ADD	supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 ADD package.json /tests/package.json
 ADD start_test.sh /tmp/start_test.sh
 ADD ExampleTest.yaml /tmp/tests/ExampleTest.yaml
+ADD EatsyTest.yaml  /tmp/tests/EatsyTest.yaml
 
 RUN chmod +x /tmp/start_test.sh
 WORKDIR /tests

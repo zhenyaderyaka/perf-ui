@@ -1,0 +1,54 @@
+# influxdb:
+#   url: http://localhost:8086/
+#   db_name: perfui
+#   user: 
+#   password:
+# reportportal:
+#  url: https://rp_url/api/v1 # Should be RP API url
+#  token: your-rp-uuid-token
+#  project: your_project_name
+#  launch_name: UI_Google_Test
+#  launch_tags:
+#    - Google Test
+#    - www.google.com
+EatsyWeb: # TestSuite
+  EatsySearch: # TestCase
+    url:
+      - https://www.etsy.com/
+    steps:
+      - input:
+          xpath: //input[@id='search-query']
+          value: hats
+      - check:
+          xpath: //button[@value='Search']
+      - click:
+          xpath: //button[@value='Search']
+      - input:
+          xpath: //input[@id='search-query']
+          value: shoes
+      - click:
+          xpath: //button[@value='Search']
+  EatsyLogin: #TestCase
+    url:
+      - https://www.etsy.com/   
+    steps:
+      - click: 
+          xpath: //a[@id='sign-in']
+      - check:
+          xpath: //input[@id='join_neu_email_field']
+      - input:
+          xpath: //input[@id='join_neu_email_field']
+          value: hupfyn@gmail.com
+      - check:
+          xpath: //input[@id='join_neu_password_field']
+      - input:
+          xpath: //input[@id='join_neu_password_field']
+          value: RootRootRoot
+      - click:
+          xpath: //button[@value='sign-in']
+  EatsySearchParam:
+    url:
+      - https://www.etsy.com/search?q=
+    parameters:
+      - shoes
+      - hats

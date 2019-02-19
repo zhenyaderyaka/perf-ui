@@ -14,14 +14,19 @@
    limitations under the License.
 */
 
-const { Builder, By } = require('selenium-webdriver')
+const {
+    Builder,
+    By
+} = require('selenium-webdriver')
 
 require('chromedriver');
 
 var Waiter = require("./waiters")
 var Lighthouse = require('./lighthouse')
 var Logger = require('./logger')
-const { format } = require('util')
+const {
+    format
+} = require('util')
 var utils = require('./utils')
 var JUnitBuilder = require('./junit_reporter')
 
@@ -50,64 +55,97 @@ const capabilities = {
     }
 }
 
-ScenarioBuilder.prototype.testStep = function (driver, page_name, url, param, check, waiter, iteration) {
-    var status = 'ok';
-    var outer_this = this;
+ScenarioBuilder.prototype.testStep_v1 = function (driver, page_name, pageUrl, stepList, waiter, iteration) {
     var page_name = page_name.replace(/[^a-zA-Z0-9_]+/g, '_')
     var lh_name = `${page_name}_lh_${iteration}`
+    var status = 'ok';
+    var outer_this = this;
 
-    console.log("Opening %s page (%d)", page_name, iteration)
 
-    return driver.get(url).then(() => {
-        if (check != null || check != undefined) {
-            if (check['xpath'] != null) {
-                var xpath = By.xpath(check['xpath'])
-                return waiter.waitFor(xpath)
-                    .then(() => waiter.waitUntilVisible(xpath))
+    console.log("Opening %s TestCase (%d)", page_name, iteration)
 
-            } else if (check['css'] != null) {
-                var css = By.css(check['css'])
-                return waiter.waitFor(css)
-                    .then(() => waiter.waitUntilVisible(css))
+    return driver.get(pageUrl)
+        .then(() => outer_this.execList(driver, stepList, waiter))
+        .catch((error) => outer_this.errorHandler(driver, page_name, error, pageUrl, lh_name, status))
+        .then(() => outer_this.lightHouseAnalyse(driver, page_name, pageUrl, lh_name, status))
+
+}
+
+ScenarioBuilder.prototype.execList = function (driver, stepList, waiter) {
+
+    for (i = 0; i < stepList.length; i++) {
+        if (stepList[i][0] == 'input') {
+            if (stepList[i][1] == 'xpath') {
+                var locator = By.xpath(stepList[i][2])
+            } else {
+                var locator = By.css(stepList[i][2])
             }
+            var value = stepList[i][3]
+            var inputField = driver.findElement(locator)
+            if (inputField.getText != "") {
+                inputField.clear()
+            }
+            inputField.sendKeys(value)
         }
-    })
-        .catch((error) => {
-            console.log(`Open ${page_name} page failed.`)
+        if (stepList[i][0] == 'click') {
+            if (stepList[i][1] == 'xpath') {
+                var locator = By.xpath(stepList[i][2])
+            } else {
+                var locator = By.css(stepList[i][2])
+            }
+            driver.findElement(locator).click()
+        }
+        if (stepList[i][0] == 'check') {
+            if (stepList[i][1] == 'xpath') {
+                var locator = By.xpath(stepList[i][2])
+            } else {
+                var locator = By.css(stepList[i][2])
+            }
+            waiter.waitFor(locator).then(() => waiter.waitUntilVisible(locator))
+        }
+    }
+}
 
-            if (!outer_this.logger && !outer_this.rp) {
-                utils.takeScreenshot(driver, `${page_name}_Failed`)
-            }
+ScenarioBuilder.prototype.errorHandler = function (driver, page_name, error, pageUrl, lh_name, status) {
+    console.log(`Test Case ${page_name} failed.`)
+    var outer_this = this;
 
-            outer_this.lighthouse.startLighthouse(lh_name, lighthouse_opts, driver, this.testName);
+    if (!outer_this.logger && !outer_this.rp) {
+        utils.takeScreenshot(driver, `${page_name}_Failed`)
+    }
 
-            if (outer_this.logger) {
-                utils.takeScreenshot(driver, `${page_name}_Failed`)
-                outer_this.logger.logError(error, url, page_name, param)
-            }
-            if (outer_this.rp) {
-                outer_this.rp.reportIssue(error, url, param, page_name, driver, lh_name)
-            }
-            outer_this.junit.failCase(page_name, error)
-            status = 'ko';
-        }).then(() => {
-            if (!outer_this.logger && !outer_this.rp && status != 'ko') {
-                utils.takeScreenshot(driver, page_name)
-            }
-            if (status != 'ko') {
-                outer_this.lighthouse.startLighthouse(lh_name, lighthouse_opts, driver, this.testName);
-                outer_this.junit.successCase(page_name)
-            }
-            if (outer_this.logger) {
-                if (status != 'ko') {
-                    utils.takeScreenshot(driver, page_name)
-                }
-                outer_this.logger.logInfo(driver, page_name, status)
-            }
-            if (outer_this.rp && status != 'ko') {
-                outer_this.rp.reportResult(page_name, url, param, driver, lh_name)
-            }
-        })
+    outer_this.lighthouse.startLighthouse(lh_name, lighthouse_opts, driver, this.testName);
+
+    if (outer_this.logger) {
+        utils.takeScreenshot(driver, `${page_name}_Failed`)
+        outer_this.logger.logError(error, pageUrl, page_name, param)
+    }
+    if (outer_this.rp) {
+        outer_this.rp.reportIssue(error, pageUrl, param, page_name, driver, lh_name)
+    }
+    outer_this.junit.failCase(page_name, error)
+    status = 'ko';
+}
+
+ScenarioBuilder.prototype.lightHouseAnalyse = function (driver, page_name, pageUrl, lh_name, status) {
+    var outer_this = this;
+    console.log(`Starting Analyse ${page_name}.`)
+    if (!outer_this.logger && !outer_this.rp && status != 'ko') {
+        utils.takeScreenshot(driver, page_name)
+    }
+    if (status != 'ko') {
+        outer_this.lighthouse.startLighthouse(lh_name, lighthouse_opts, driver, this.testName);
+        outer_this.junit.successCase(page_name)
+    }
+    if (outer_this.logger) {
+        if (status != 'ko') {
+            utils.takeScreenshot(driver, page_name)
+        }
+        outer_this.logger.logInfo(driver, page_name, status)
+    }
+    if (outer_this.rp && status != 'ko') {
+        outer_this.rp.reportResult(page_name, pageUrl, param, driver, lh_name)
+    }
 }
 
 ScenarioBuilder.prototype.scn = async function (scenario, iteration, times) {
@@ -126,8 +164,7 @@ ScenarioBuilder.prototype.scn = async function (scenario, iteration, times) {
         if (word.match(/--remote-debugging-port=*/)) {
             port = Number(word.split('=')[1]);
             lighthouse_opts.port = port;
-        } else {
-        }
+        } else {}
     });
 
     var test_name = outer_this.testName
@@ -137,27 +174,78 @@ ScenarioBuilder.prototype.scn = async function (scenario, iteration, times) {
     try {
         console.log(`${test_name} test, iteration ${iteration}`)
         for (let page_name in scenario) {
+
             var page = scenario[page_name]
-            var url = page['url']
+            const testCaseSteps = 'steps'
+
+            const testCaseLocatorXpath = 'xpath'
+            const testCaseLocatorCss = 'css'
+
+            const testCaseStepsActionInput = 'input'
+            const testCaseStepsActionClick = 'click'
+            const testCaseStepsActionCheck = 'check'
+
+            const testCaseStepsActionValue = 'value'
+
+            var stepList = []
+            var pageUrl = page['url'][0]
+
+            if (page[testCaseSteps] != null || page[testCaseSteps] != undefined) {
+                for (i = 0; i < page[testCaseSteps].length; i++) {
+                    if (page[testCaseSteps][i][testCaseStepsActionInput]) {
+                        var inputStep = page[testCaseSteps][i][testCaseStepsActionInput]
+                        if (inputStep[testCaseLocatorXpath]) {
+                            stepList[i] = [testCaseStepsActionInput, testCaseLocatorXpath, inputStep[testCaseLocatorXpath], inputStep[testCaseStepsActionValue]]
+                        }
+                        if (inputStep[testCaseLocatorCss]) {
+                            stepList[i] = [testCaseStepsActionInput, testCaseLocatorCss, inputStep[testCaseLocatorCss], inputStep[testCaseStepsActionValue]]
+                        }
+                    }
+                    if (page[testCaseSteps][i][testCaseStepsActionClick]) {
+                        stepClick = page[testCaseSteps][i][testCaseStepsActionClick]
+                        if (stepClick[testCaseLocatorXpath]) {
+                            stepList[i] = [testCaseStepsActionClick, testCaseLocatorXpath, stepClick[testCaseLocatorXpath]]
+                        }
+                        if (stepClick[testCaseLocatorCss]) {
+                            stepList[i] = [testCaseStepsActionClick, testCaseLocatorCss, stepClick[testCaseLocatorCss]]
+                        }
+                    }
+                    if (page[testCaseSteps][i][testCaseStepsActionCheck]) {
+                        stepCheck = page[testCaseSteps][i][testCaseStepsActionCheck]
+                        if (stepCheck[testCaseLocatorXpath]) {
+                            stepList[i] = [testCaseStepsActionCheck, testCaseLocatorXpath, stepCheck[testCaseLocatorXpath]]
+                        }
+                        if (stepCheck[testCaseLocatorCss]) {
+                            stepList[i] = [testCaseStepsActionCheck, testCaseLocatorCss, stepCheck[testCaseLocatorCss]]
+                        }
+                    }
+                }
+            }
+
             var parameters = page['parameters']
-            var check = page['check']
+            // console.log(parameters)
 
             if (parameters != null || parameters != undefined) {
                 if (parameters.length > 1) {
-                    for (let param of parameters) {
-                        let page_url = url + param
-                        let name = format("%s_%d", page_name, parameters.indexOf(param))
-                        await outer_this.testStep(driver, name, page_url, param, check, waiter, iteration)
+                    var paramIterator = 1
+                    for (let parameter of parameters) {
+                        pageUrlWithParameters = pageUrl + parameter
+                        pageNameWithParameter = page_name + "_" + paramIterator
+                        await outer_this.testStep_v1(driver, pageNameWithParameter, pageUrlWithParameters, stepList, waiter, iteration)
+                        paramIterator += 1
                     }
+
                 } else {
-                    let page_url = url + parameters
-                    await outer_this.testStep(driver, page_name, page_url, parameters, check, waiter, iteration)
+                    // console.log(pageUrl)
+                    pageUrl = pageUrl + parameters
+                    await outer_this.testStep_v1(driver, page_name, pageUrl, stepList, waiter, iteration)
                 }
             } else {
-                await outer_this.testStep(driver, page_name, url, parameters, check, waiter, iteration)
+                await outer_this.testStep_v1(driver, page_name, pageUrl, stepList, waiter, iteration)
             }
 
             await utils.sleep(3)
+
         }
     } catch (e) {
         outer_this.junit.errorCase(e)
@@ -170,9 +258,8 @@ ScenarioBuilder.prototype.scn = async function (scenario, iteration, times) {
             utils.sleep(5)
             console.info("Congrats, test is done.")
         }
-        await driver.quit();
+        driver.quit();
     }
-
 }
 
 module.exports = ScenarioBuilder
