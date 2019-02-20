@@ -3,19 +3,23 @@
 #   db_name: perfui
 #   user: 
 #   password:
-# reportportal:
-#  url: https://rp_url/api/v1 # Should be RP API url
-#  token: your-rp-uuid-token
-#  project: your_project_name
-#  launch_name: UI_Google_Test
-#  launch_tags:
-#    - Google Test
-#    - www.google.com
+reportportal:
+ url: https://rp.epam.com/api/v1 # Should be RP API url
+ token: 766fcf39-79c1-41da-8e3d-4092726a2412
+ project: ivan_nahornyi_personal
+ launch_name: perf-UI v1
+ launch_tags:
+   - Demo test
+   - Eatsy Demo
 EatsyWeb: # TestSuite
   EatsySearch: # TestCase
     url:
       - https://www.etsy.com/
+    parameters:
+      - search?q=shoes
+      - search?q=hats
     steps:
+      - url: https://www.etsy.com/
       - input:
           xpath: //input[@id='search-query']
           value: hats
@@ -25,12 +29,10 @@ EatsyWeb: # TestSuite
           xpath: //button[@value='Search']
       - input:
           xpath: //input[@id='search-query']
-          value: shoes
+          value: converse
       - click:
           xpath: //button[@value='Search']
-  EatsyLogin: #TestCase
-    url:
-      - https://www.etsy.com/   
+  EatsyLogin: #TestCase 
     steps:
       - click: 
           xpath: //a[@id='sign-in']
@@ -46,9 +48,9 @@ EatsyWeb: # TestSuite
           value: RootRootRoot
       - click:
           xpath: //button[@value='sign-in']
-  EatsySearchParam:
-    url:
-      - https://www.etsy.com/search?q=
-    parameters:
-      - shoes
-      - hats
+  # EatsySearchParam:
+  #   url:
+  #     - https://www.etsy.com/search?q=
+  #   parameters:
+  #     - shoes
+  #     - hats
