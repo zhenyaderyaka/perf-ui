@@ -85,11 +85,11 @@ reportportal:
 
 # Test Config
 # For test config is required: 
-#  - Test Suite name (e.g. Demo). Names should not contain spaces.
-#  - Test Case name (e.g. SearchWithParameters). Names should not contain spaces.
+#  - Test Suite name (e.g. Demo). Name should not contain spaces.
+#  - Test Case name (e.g. SearchWithParameters). Name should not contain spaces.
 #  - url (e.g.  https://www.etsy.com/ ) Required only for first Test Case. 
 #                                       Next Test Case will be executing with this parameter automatically.
-#                                       You have opportunity used "Open URL Action" instead this block
+#                                       You have opportunity to use "Open URL Action" instead this block
 
 # Test Config Structure (example)
 Demo:                                         # Test Suite
@@ -101,19 +101,19 @@ Demo:                                         # Test Suite
       - search?q=shoes                               
       - search?q=hats
 
-    steps:                                          # Test Case Step (List of action wich need to execute. Every action executing consequentially)
+    steps:                                          # Test Case Step (List of action which needs to be executed. Each action is executed consequentially)
 
       - url: https://www.etsy.com                       # Open URL Action (Navigate to a specified page.)
 
-      - input:                                        # Input Action (Entering data in to specified field)
-          xpath: //input[@id='search-query']            # locator for WebElement (You can use "xpath" or "css" type of locator)
-          value: shirt                                  # data which you want to entering
+      - input:                                        # Input Action (Entering data into specified field)
+          xpath: //input[@id='search-query']            # locator for WebElement (You can use "xpath" or "css" type of locators)
+          value: shirt                                  # data which you want to enter
 
       - check:                                        # Check Action (check page state or WebElement state)
-          xpath: //button[@value='Search']              # locator for WebElement (You can use "xpath" or "css" type of locator)
+          xpath: //button[@value='Search']              # locator for WebElement (You can use "xpath" or "css" type of locators)
 
-      - click:                                        # Click Action (Mouse click to specified WebElement)
-          xpath: //button[@value='Search']              # locator for WebElement (You can use "xpath" or "css" type of locator)
+      - click:                                        # Click Action (Click specified WebElement)
+          xpath: //button[@value='Search']              # locator for WebElement (You can use "xpath" or "css" type of locators)
       
 ```
 
