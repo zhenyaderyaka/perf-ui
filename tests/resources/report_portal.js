@@ -36,7 +36,6 @@ function ReportPortal(config) {
 }
 
 ReportPortal.prototype.startTestLaunch = function (description) {
-    console.log("Start Launch in RP")
     var outer_this = this;
     var currentDate = new Date();
     var date = currentDate.getDate() + "/" + (currentDate.getMonth() + 1) + "/" + currentDate.getFullYear();
@@ -46,14 +45,15 @@ ReportPortal.prototype.startTestLaunch = function (description) {
         description: description,
         tags: outer_this.launch_tags || [date]
     });
+    console.log("Start Launch in RP")
 }
 
 ReportPortal.prototype.finishTestLaunch = function () {
-    console.log("Finish Launch in RP")
     var outer_this = this;
     outer_this.rpClient.finishLaunch(outer_this.launch.tempId, {
         end_time: outer_this.rpClient.helpers.now()
     });
+    console.log("Finish Launch in RP")
 }
 
 ReportPortal.prototype.startItem = function (name, description, tags) {

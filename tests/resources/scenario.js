@@ -21,8 +21,6 @@ const {
 
 require('chromedriver');
 
-// var driver
-
 
 var Waiter = require("./waiters")
 var Lighthouse = require('./lighthouse')
@@ -144,6 +142,9 @@ ScenarioBuilder.prototype.errorHandler = function (driver, page_name, error, pag
 ScenarioBuilder.prototype.lightHouseAnalyse = function (driver, page_name, pageUrl, param, lh_name, status) {
     var outer_this = this;
     console.log(`Starting Analyse ${page_name}.`)
+    if (status == null || status == undefined){
+        status = 'ok'
+    }
     if (!outer_this.logger && !outer_this.rp && status != 'ko') {
         utils.takeScreenshot(driver, page_name)
     }
@@ -245,7 +246,6 @@ ScenarioBuilder.prototype.scn = async function (scenario, iteration, times) {
                     }
                 }
             }
-            console.log(baseUrl)
             if (parameters != null || parameters != undefined) {
                 if (parameters.length > 1) {
                     var paramIterator = 1

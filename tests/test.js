@@ -56,9 +56,7 @@ var ScenarioBuilder = new Scenario(test_name, influx_conf, rp)
 
 async function run() {
     for (var j = 1; j <= times; j++) {
-        await ScenarioBuilder.scn(scenario, j, times).catch((err) => {
-            console.log("ERROR")
-        })
+        await ScenarioBuilder.scn(scenario, j, times)
     }
 }
 
