@@ -1,16 +1,16 @@
-influxdb:
-  url: http://localhost:8086/
-  db_name: perfui
-  user: 
-  password:
-reportportal:
- url: https://rp.epam.com/api/v1 # Should be RP API url
- token: 766fcf39-79c1-41da-8e3d-4092726a2412
- project: ivan_nahornyi_personal
- launch_name: perf-UI v1
- launch_tags:
-   - Demo test
-   - Eatsy Demo
+# influxdb:
+#   url: http://localhost:8086/
+#   db_name: perfui
+#   user: 
+#   password:
+# reportportal:
+#  url: https://report.portal.com/api/v1 # Should be RP API url
+#  token: 766fcf39-79c1-41da-8e3d-4092726a2412
+#  project: ivan_nahornyi_example
+#  launch_name: perf-ui
+#  launch_tags:
+#    - Demo test
+#    - New features
 Demo: # TestSuite
   SearchWithParameters: # TestCase
     url: https://www.etsy.com/

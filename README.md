@@ -25,7 +25,7 @@ For example:
 ```
     docker run -t -v <your_local_path_to_reports>:/tmp/reports \
     --rm --name perfui \
-    getcarrier/perf-ui -n 1 -t ExampleTest.yaml -e example 
+    getcarrier/perf-ui -n 1 -t ExampleTest.yaml -e Demo 
 ```
 
 Results of test example you can find at  `your_local_path_to_reports` as _Lighthouse_ html reports, _Screenshots_ of opened 
@@ -124,7 +124,7 @@ _______________________
             docker run -t -v <your_local_path_to_reports>:/tmp/reports \ 
             -v <your_local_path_to_test>/ExampleTest.yaml:/tmp/tests/ExampleTest.yaml \
             --rm --link <your_influxdb_name_or_id>:influx_db_link --name perfui \
-            getcarrier/perf-ui -n 1 -t ExampleTest.yaml -e example 
+            getcarrier/perf-ui -n 1 -t ExampleTest.yaml -e Demo 
         ```
 
 #### To run your configured scenario, mount it to `getcarrier/perf-ui` container as:
@@ -137,7 +137,7 @@ When you configured your own test file run command should looks example below (w
     docker run -t -v <your_local_path_to_reports>:/tmp/reports \ 
     -v <your_local_path_to_test>/ExampleTest.yaml:/tmp/tests/ExampleTest.yaml \
     --rm --name perfui \
-    getcarrier/perf-ui -n 1 -t ExampleTest.yaml -e example 
+    getcarrier/perf-ui -n 1 -t ExampleTest.yaml -e Demo 
 ```
 
 ____________________
