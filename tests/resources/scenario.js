@@ -75,7 +75,6 @@ ScenarioBuilder.prototype.execList = function (driver, stepList, waiter) {
 
     var locator;
     var lastStep;
-        
 
     for (i = 0; i < stepList.length; i++) {
         if (stepList[i] == undefined || stepList[i] == null) {
@@ -139,6 +138,7 @@ ScenarioBuilder.prototype.errorHandler = function (driver, page_name, error, pag
     }
 
     outer_this.junit.failCase(page_name, error)
+    
     
 }
 ScenarioBuilder.prototype.lightHouseAnalyse = function (driver, page_name, pageUrl, param, lh_name, status) {
