@@ -68,7 +68,7 @@ ScenarioBuilder.prototype.testStep_v1 = function (driver, page_name, baseUrl, pa
 
     return driver.get(baseUrl).then(()=> outer_this.execList(driver, stepList, waiter))
     .catch((error) => outer_this.errorHandler(driver, page_name, error, baseUrl, parameters, lh_name, status))
-    .then(() => outer_this.lightHouseAnalyse(driver, page_name, baseUrl, parameters, lh_name, status))
+    .then((status) => outer_this.lightHouseAnalyse(driver, page_name, baseUrl, parameters, lh_name, status))
 }
 
 ScenarioBuilder.prototype.execList = function (driver, stepList, waiter) {
@@ -139,7 +139,7 @@ ScenarioBuilder.prototype.errorHandler = function (driver, page_name, error, pag
 
     outer_this.junit.failCase(page_name, error)
     
-    
+    return status
 }
 ScenarioBuilder.prototype.lightHouseAnalyse = function (driver, page_name, pageUrl, param, lh_name, status) {
     var outer_this = this;
