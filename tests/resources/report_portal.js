@@ -45,7 +45,6 @@ ReportPortal.prototype.startTestLaunch = function (description) {
         description: description,
         tags: outer_this.launch_tags || [date]
     });
-    console.log("Start Launch in RP")
 }
 
 ReportPortal.prototype.finishTestLaunch = function () {
@@ -53,7 +52,6 @@ ReportPortal.prototype.finishTestLaunch = function () {
     outer_this.rpClient.finishLaunch(outer_this.launch.tempId, {
         end_time: outer_this.rpClient.helpers.now()
     });
-    console.log("Finish Launch in RP")
 }
 
 ReportPortal.prototype.startItem = function (name, description, tags) {

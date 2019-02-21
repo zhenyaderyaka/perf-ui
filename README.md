@@ -85,30 +85,36 @@ reportportal:
 
 # Test Config
 # For test config is required: 
-#  - environment (e.g. staging);
-#  - page name (e.g. Google, Google_Search). Page names should not contain spaces.
-#  - url (e.g. https://www.google.com)
-# Check for each page is not required but desirable to use.
+#  - Test Suite name (e.g. Demo). Names should not contain spaces.
+#  - Test Case name (e.g. SearchWithParameters). Names should not contain spaces.
+#  - url (e.g.  https://www.etsy.com/ ) Required only for first Test Case. 
+#                                       Next Test Case will be executing with this parameter automatically.
+#                                       You have opportunity used "Open URL Action" instead this block
 
-# Test config example:
-staging:                                    # Name of environment or scenario of your test
-   Google:                                  # Page Name
-     url: https://www.google.com            # Page URL
-   Google_Search:
-     url: https://www.google.com/search?q=  # Page url with parameters
-     # URL parameters. Each parameter is for different page
-     parameters:                            
-       - ui+performance                     # Google Search for UI Performance
-       - api+performance                    # Google Search for API Performance
-     # Check for page loading state
-     check:
-        # XPATH check for page state
-        xpath: //a[contains(text(), "performance")]
-   Yahoo:
-     url: https://www.yahoo.com
-     check:
-       # CSS check for page state
-       css: div#Masterwrap
+# Test Config Structure (example)
+Demo:                                         # Test Suite
+
+  SearchWithParameters:                         # Test Case
+
+    url: https://www.etsy.com/                      # Page URL (Starting URL) 
+    parameters:                                     # URL parameters. (Each parameter is for different page)
+      - search?q=shoes                               
+      - search?q=hats
+
+    steps:                                          # Test Case Step (List of action wich need to execute. Every action executing consequentially)
+
+      - url: https://www.etsy.com                       # Open URL Action (Navigate to a specified page.)
+
+      - input:                                        # Input Action (Entering data in to specified field)
+          xpath: //input[@id='search-query']            # locator for WebElement (You can use "xpath" or "css" type of locator)
+          value: shirt                                  # data which you want to entering
+
+      - check:                                        # Check Action (check page state or WebElement state)
+          xpath: //button[@value='Search']              # locator for WebElement (You can use "xpath" or "css" type of locator)
+
+      - click:                                        # Click Action (Mouse click to specified WebElement)
+          xpath: //button[@value='Search']              # locator for WebElement (You can use "xpath" or "css" type of locator)
+      
 ```
 
 _______________________

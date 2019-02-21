@@ -1,13 +1,13 @@
 # influxdb:
-#   url: http://localhost:8086/
-#   db_name: perfui
-#   user: 
-#   password:
+#  url: http://your_influx_url:port/
+#  db_name: your_database
+#  user: 
+#  password:
 # reportportal:
-#  url: https://report.portal.com/api/v1 # Should be RP API url
-#  token: 766fcf39-79c1-41da-8e3d-4092726a2412
-#  project: ivan_nahornyi_example
-#  launch_name: perf-ui
+#  url: https://rp_url/api/v1 # Should be RP API url
+#  token: your-rp-uuid-token
+#  project: your_project_name
+#  launch_name: UI_Google_Test
 #  launch_tags:
 #    - Demo test
 #    - New features

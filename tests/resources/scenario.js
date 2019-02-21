@@ -66,7 +66,7 @@ ScenarioBuilder.prototype.testStep_v1 = function (driver, page_name, baseUrl, pa
 
     return driver.get(baseUrl).then(()=> outer_this.execList(driver, stepList, waiter))
     .catch((error) => outer_this.errorHandler(driver, page_name, error, baseUrl, parameters, lh_name, status))
-    .then((status) => outer_this.lightHouseAnalyse(driver, page_name, baseUrl, parameters, lh_name, status))
+    .then((status) => outer_this.analyseAndReportResult(driver, page_name, baseUrl, parameters, lh_name, status))
 }
 
 ScenarioBuilder.prototype.execList = function (driver, stepList, waiter) {
@@ -134,12 +134,11 @@ ScenarioBuilder.prototype.errorHandler = function (driver, page_name, error, pag
     if (outer_this.rp) {
         outer_this.rp.reportIssue(error, pageUrl, param, page_name, driver, lh_name)
     }
-
     outer_this.junit.failCase(page_name, error)
     
     return status
 }
-ScenarioBuilder.prototype.lightHouseAnalyse = function (driver, page_name, pageUrl, param, lh_name, status) {
+ScenarioBuilder.prototype.analyseAndReportResult = function (driver, page_name, pageUrl, param, lh_name, status) {
     var outer_this = this;
     console.log(`Starting Analyse ${page_name}.`)
     if (status == null || status == undefined){
@@ -199,49 +198,49 @@ ScenarioBuilder.prototype.scn = async function (scenario, iteration, times) {
                 baseUrl = page['url']
             }
             
-            const testCaseSteps = 'steps'
-            const testCaseLocatorXpath = 'xpath'
-            const testCaseLocatorCss = 'css'
-            const testCaseStepsActionUrl = 'url'
-            const testCaseStepsActionInput = 'input'
-            const testCaseStepsActionClick = 'click'
-            const testCaseStepsActionCheck = 'check'
-            const testCaseStepsActionValue = 'value'
+            const testSteps = 'steps'
+            const locatorXpath = 'xpath'
+            const locatorCss = 'css'
+            const testUrl = 'url'
+            const testInput = 'input'
+            const inputValue = 'value'
+            const testClick = 'click'
+            const testCheck = 'check'
 
-            if (page[testCaseSteps] != null || page[testCaseSteps] != undefined) {
-                for (i = 0; i < page[testCaseSteps].length; i++) {
-                    if (page[testCaseSteps][i][testCaseStepsActionUrl]) {
-                        var url = page[testCaseSteps][i][testCaseStepsActionUrl]
-                        stepList[i] = [testCaseStepsActionUrl, url]
+            if (page[testSteps] != null || page[testSteps] != undefined) {
+                for (i = 0; i < page[testSteps].length; i++) {
+                    if (page[testSteps][i][testUrl]) {
+                        var url = page[testSteps][i][testUrl]
+                        stepList[i] = [testUrl, url]
                         if (baseUrl == null || baseUrl == undefined) {
                             baseUrl = url
                         }
                     }
-                    if (page[testCaseSteps][i][testCaseStepsActionInput]) {
-                        var inputStep = page[testCaseSteps][i][testCaseStepsActionInput]
-                        if (inputStep[testCaseLocatorXpath]) {
-                            stepList[i] = [testCaseStepsActionInput, testCaseLocatorXpath, inputStep[testCaseLocatorXpath], inputStep[testCaseStepsActionValue]]
+                    if (page[testSteps][i][testInput]) {
+                        var inputStep = page[testSteps][i][testInput]
+                        if (inputStep[locatorXpath]) {
+                            stepList[i] = [testInput, locatorXpath, inputStep[locatorXpath], inputStep[inputValue]]
                         }
-                        if (inputStep[testCaseLocatorCss]) {
-                            stepList[i] = [testCaseStepsActionInput, testCaseLocatorCss, inputStep[testCaseLocatorCss], inputStep[testCaseStepsActionValue]]
-                        }
-                    }
-                    if (page[testCaseSteps][i][testCaseStepsActionClick]) {
-                        stepClick = page[testCaseSteps][i][testCaseStepsActionClick]
-                        if (stepClick[testCaseLocatorXpath]) {
-                            stepList[i] = [testCaseStepsActionClick, testCaseLocatorXpath, stepClick[testCaseLocatorXpath]]
-                        }
-                        if (stepClick[testCaseLocatorCss]) {
-                            stepList[i] = [testCaseStepsActionClick, testCaseLocatorCss, stepClick[testCaseLocatorCss]]
+                        if (inputStep[locatorCss]) {
+                            stepList[i] = [testInput, locatorCss, inputStep[locatorCss], inputStep[inputValue]]
                         }
                     }
-                    if (page[testCaseSteps][i][testCaseStepsActionCheck]) {
-                        stepCheck = page[testCaseSteps][i][testCaseStepsActionCheck]
-                        if (stepCheck[testCaseLocatorXpath]) {
-                            stepList[i] = [testCaseStepsActionCheck, testCaseLocatorXpath, stepCheck[testCaseLocatorXpath]]
+                    if (page[testSteps][i][testClick]) {
+                        stepClick = page[testSteps][i][testClick]
+                        if (stepClick[locatorXpath]) {
+                            stepList[i] = [testClick, locatorXpath, stepClick[locatorXpath]]
                         }
-                        if (stepCheck[testCaseLocatorCss]) {
-                            stepList[i] = [testCaseStepsActionCheck, testCaseLocatorCss, stepCheck[testCaseLocatorCss]]
+                        if (stepClick[locatorCss]) {
+                            stepList[i] = [testClick, locatorCss, stepClick[locatorCss]]
+                        }
+                    }
+                    if (page[testSteps][i][testCheck]) {
+                        stepCheck = page[testSteps][i][testCheck]
+                        if (stepCheck[locatorXpath]) {
+                            stepList[i] = [testCheck, locatorXpath, stepCheck[locatorXpath]]
+                        }
+                        if (stepCheck[locatorCss]) {
+                            stepList[i] = [testCheck, locatorCss, stepCheck[locatorCss]]
                         }
                     }
                 }
