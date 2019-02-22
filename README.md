@@ -17,7 +17,7 @@ These simple steps will run **Perf-UI** container for test which described in [E
 
     `t` - test file name
 
-    `e` - test environment or scenario from test file
+    `e` - test suite or scenario from test file
     
     `your_local_path_to_reports` - path on your local filesystem where you want to store reports from this execution
 
