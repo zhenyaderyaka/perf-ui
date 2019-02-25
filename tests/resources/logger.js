@@ -130,7 +130,7 @@ Logger.prototype.measure = function (driver, pageName, status) {
 
             data = data.concat(datacell);
             outer_this.client.write(data[0]).tag(data[1]).field(data[2]).queue();
-            outer_this.client.syncWrite();
+            outer_this.client.syncWrite().catch((error)=> {console.log(error)});
             resolve();
         })
 

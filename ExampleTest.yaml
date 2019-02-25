@@ -12,40 +12,49 @@
 #    - Demo test
 #    - New features
 Demo: # TestSuite
-  SearchWithParameters: # TestCase
-    url: https://www.etsy.com/
-    parameters:
-      - search?q=shoes
-      - search?q=hats
-  SearchWithInputData: # TestCase
-    steps:
-      - input:
-          xpath: //input[@id='search-query']
-          value: shirt
-      - check:
-          xpath: //button[@value='Search']
-      - click:
-          xpath: //button[@value='Search']
-      - input:
-          xpath: //input[@id='search-query']
-          value: converse
-      - check:
-          xpath: //button[@value='Search']
-      - click:
-          xpath: //button[@value='Search']
-  LoginIntoService: #TestCase
-    steps:
-      - click: 
-          xpath: //a[@id='sign-in']
-      - check:
-          xpath: //input[@id='join_neu_email_field']
-      - input:
-          xpath: //input[@id='join_neu_email_field']
-          value: hupfyn@gmail.com
-      - check:
-          xpath: //input[@id='join_neu_password_field']
-      - input:
-          xpath: //input[@id='join_neu_password_field']
-          value: RootRootRoot
-      - click:
-          xpath: //button[@value='sign-in']
+    SearchWithParameters: # TestCase
+        url: https://www.etsy.com/search?q=
+        parameters:
+            - hats
+            - shoese
+    SearchWithInputData: # TestCase
+        url: https://www.etsy.com/
+        steps:
+            - input:
+                xpath: //input[@id='search-query']
+                value: converse
+            - check:
+                xpath: //button[@value='Search']
+            - click:
+                xpath: //button[@value='Search']
+    LoginIntoService: #TestCase
+        steps:
+            - click: 
+                xpath: //a[@id='sign-in']
+            - check:
+                xpath: //input[@id='join_neu_email_field']
+            - input:
+                xpath: //input[@id='join_neu_email_field']
+                value: hupfyn@gmail.com
+            - check:
+                xpath: //input[@id='join_neu_password_field']
+            - input:
+                xpath: //input[@id='join_neu_password_field']
+                value: RootRootRoot
+            - click:
+                xpath: //button[@value='sign-in']
+    SwitchToFrame: # TestCase
+        url: https://www.etsy.com/
+        steps:
+            - switchToFrame:
+                id: etsy-device-id-iframe
+            - switchToDefault: true
+    ScrollToElement: # TestCase
+        steps:
+            - check:
+                xpath: //span[@class='etsy-icon footer-logo']
+            
+        
+        
+        
+      
