@@ -31,8 +31,9 @@ function Logger(influx_conf, scenario) {
 }
 
 Logger.prototype.logInfo = function (driver, pageName, status) {
+    var isAlert = false;
     var outer_this = this;
-    outer_this.measure(driver, pageName, status)
+    outer_this.measure(driver, pageName, status, isAlert)
         .then(() => {
             return driver.executeScript('performance.clearResourceTimings()');
         });
@@ -80,7 +81,8 @@ function defineErrorType(pageName, errorMessage) {
     }
 }
 
-Logger.prototype.measure = function (driver, pageName, status) {
+Logger.prototype.measure = function (driver, pageName, status, isAlert) {
+    sleep(2);
     var outer_this = this;
     return new Promise(function (resolve, reject) {
         var script = "return {" +
@@ -94,7 +96,7 @@ Logger.prototype.measure = function (driver, pageName, status) {
 
             console.log(JSON.stringify(perfData.navigation[0].name));
 
-            var diff = outer_this.perf_client.parsePerfData(perfData);
+            var diff = outer_this.perf_client.parsePerfData(perfData, isAlert);
 
             var data = ['uiperf', {
                 page: pageName,
@@ -136,5 +138,12 @@ Logger.prototype.measure = function (driver, pageName, status) {
 
     });
 };
+
+function sleep(time) {
+    var stop = new Date().getTime();
+    while (new Date().getTime() < stop + time * 1000) {
+        ;
+    }
+}
 
 module.exports = Logger;

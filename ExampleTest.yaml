@@ -7,7 +7,7 @@
 #  url: https://rp_url/api/v1 # Should be RP API url
 #  token: your-rp-uuid-token
 #  project: your_project_name
-#  launch_name: UI_Google_Test
+#  launch_name: UI_Performance_Test
 #  launch_tags:
 #    - Demo test
 #    - New features
@@ -43,16 +43,19 @@ Demo: # TestSuite
                 value: RootRootRoot
             - click:
                 xpath: //button[@value='sign-in']
-    SwitchToFrame: # TestCase
-        url: https://www.etsy.com/
-        steps:
-            - switchToFrame:
-                id: etsy-device-id-iframe
-            - switchToDefault: true
     ScrollToElement: # TestCase
         steps:
             - check:
                 xpath: //span[@class='etsy-icon footer-logo']
+    SwitchToFrame: # TestCase
+        url: https://aframe.io/
+        steps:
+            - switchToFrame:
+                id: exampleIframe
+            - check:
+                xpath: //a-entity[@id='logo']
+            - switchToDefault: true
+    
             
         
         
