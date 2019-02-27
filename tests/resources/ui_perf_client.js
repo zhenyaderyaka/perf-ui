@@ -152,8 +152,8 @@ UIPerformanceClient.prototype.parsePerfData = function (data, isFrame) {
             firstPaint = Math.round(lastPerfPaintTiming[0].startTime);
             firstContentfulPaint = Math.round(lastPerfPaintTiming[1].startTime);
         } catch (TypeError) {
-            console.log("[DEBUG] Cannot read 'startTime' property");
-            console.log("[DEBUG] Timing Object: " + lastPerfPaintTiming);
+            console.log("Cannot read 'startTime' property");
+            console.log("Timing Object: " + lastPerfPaintTiming);
         }
 
         return {
