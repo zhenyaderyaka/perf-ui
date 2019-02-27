@@ -136,8 +136,7 @@ UIPerformanceClient.prototype.parsePerfData = function (data, isFrame) {
             'duration': actionDuration, //measureActionTime(resourceDiff),
             'is_page': false
         };
-    } else { 
-        console.log("[DEBUG] New page");
+    } else {
         if (isFrame) {
             this.perfFrameTiming = lastPerfNavTiming;
             this.lastFrameIndex = currentLastResourceIndex;
