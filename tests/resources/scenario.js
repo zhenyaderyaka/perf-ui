@@ -77,9 +77,9 @@ ScenarioBuilder.prototype.testStep_v1 = function (driver, page_name, baseUrl, pa
 
     console.log("Opening %s TestCase (%d)", page_name, iteration)
 
-    return outer_this.execList(driver, scenarioIter, baseUrl, pageCheck, stepList, waiter)
-                        .catch((error) => outer_this.errorHandler(driver, page_name, error, baseUrl, parameters, lh_name, status))
-                        .then((status) => outer_this.analyseAndReportResult(driver, page_name, baseUrl, parameters, lh_name, status))
+    return driver.sleep(1).then(()=>outer_this.execList(driver, scenarioIter, baseUrl, pageCheck, stepList, waiter))
+                    .catch((error) => outer_this.errorHandler(driver, page_name, error, baseUrl, parameters, lh_name, status))
+                    .then((status) => outer_this.analyseAndReportResult(driver, page_name, baseUrl, parameters, lh_name, status))
 }
 
 ScenarioBuilder.prototype.execList = function (driver,scenarioIter, baseUrl, pageCheck, stepList, waiter) {
