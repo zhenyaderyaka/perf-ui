@@ -69,7 +69,7 @@ const capabilities = {
     }
 }
 
-ScenarioBuilder.prototype.testStep_v1 = function (driver, page_name, baseUrl, parameters, pageCheck, stepList, waiter, iteration) {
+ScenarioBuilder.prototype.testStep_v1 = function (driver, page_name, baseUrl, parameters, pageCheck, stepList, waiter, iteration, scenarioIter) {
     var page_name = page_name.replace(/[^a-zA-Z0-9_]+/g, '_')
     var lh_name = `${page_name}_lh_${iteration}`
     var status = 'ok';
@@ -77,15 +77,19 @@ ScenarioBuilder.prototype.testStep_v1 = function (driver, page_name, baseUrl, pa
 
     console.log("Opening %s TestCase (%d)", page_name, iteration)
 
-    return driver.get(baseUrl).then(() => outer_this.execList(driver, pageCheck, stepList, waiter))
-        .catch((error) => outer_this.errorHandler(driver, page_name, error, baseUrl, parameters, lh_name, status))
-        .then((status) => outer_this.analyseAndReportResult(driver, page_name, baseUrl, parameters, lh_name, status))
+    return outer_this.execList(driver, scenarioIter, baseUrl, pageCheck, stepList, waiter)
+                        .catch((error) => outer_this.errorHandler(driver, page_name, error, baseUrl, parameters, lh_name, status))
+                        .then((status) => outer_this.analyseAndReportResult(driver, page_name, baseUrl, parameters, lh_name, status))
 }
 
-ScenarioBuilder.prototype.execList = function (driver, pageCheck, stepList, waiter) {
+ScenarioBuilder.prototype.execList = function (driver,scenarioIter, baseUrl, pageCheck, stepList, waiter) {
 
     var locator;
     var lastStep;
+
+    if (scenarioIter == 0){
+        lastStep = driver.get(baseUrl)
+    }
 
     for (i = 0; i < stepList.length; i++) {
         if (stepList[i] == undefined || stepList[i] == null) {
@@ -152,6 +156,7 @@ ScenarioBuilder.prototype.execList = function (driver, pageCheck, stepList, wait
         }
         lastStep = waiter.waitFor(locator).then(() => waiter.waitUntilVisible(locator))
     }
+    lastStep = driver.sleep(2000)
     return lastStep
 }
 
@@ -224,6 +229,7 @@ ScenarioBuilder.prototype.scn = async function (scenario, iteration, times) {
     var test_name = outer_this.testName
 
     var waiter = new Waiter(driver)
+    var scenarioIter = 0;
 
     try {
         console.log(`${test_name} test, iteration ${iteration}`)
@@ -304,23 +310,25 @@ ScenarioBuilder.prototype.scn = async function (scenario, iteration, times) {
                     for (let parameter of parameters) {
                         pageUrlWithParameters = baseUrl + parameter
                         pageNameWithParameter = page_name + "_" + paramIterator
-                        await outer_this.testStep_v1(driver, pageNameWithParameter, pageUrlWithParameters, parameter, pageCheck, stepList, waiter, iteration)
+                        await outer_this.testStep_v1(driver, pageNameWithParameter, pageUrlWithParameters, parameter, pageCheck, stepList, waiter, iteration, scenarioIter)
                         paramIterator += 1
                     }
 
                 } else {
                     var pageUrlWithParameters = baseUrl + parameters
-                    await outer_this.testStep_v1(driver, page_name, pageUrlWithParameters, parameters, pageCheck, stepList, waiter, iteration)
+                    await outer_this.testStep_v1(driver, page_name, pageUrlWithParameters, parameters, pageCheck, stepList, waiter, iteration, scenarioIter)
                 }
             }
             else {
-                await outer_this.testStep_v1(driver, page_name, baseUrl, parameters, pageCheck, stepList, waiter, iteration)
+                await outer_this.testStep_v1(driver, page_name, baseUrl, parameters, pageCheck, stepList, waiter, iteration, scenarioIter)
             }
             await utils.sleep(3)
+            scenarioIter+= 1
         }
-    } catch (e) {
-        console.log(e)
-        outer_this.junit.errorCase(e)
+    } catch (error) {
+        console.log(error)
+        outer_this.junit.errorCase(error)
+        driver.close();
     } finally {
         if (iteration == (times)) {
             if (outer_this.rp) {

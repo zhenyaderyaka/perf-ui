@@ -72,22 +72,6 @@ function measureActionTime(resourceTimingObj) {
     return end - start;
 }
 
-function shiftResourceTimings(resourceTimingObj) {
-    if (resourceTimingObj.length < 1) {
-        return resourceTimingObj;
-    }
-    let shiftValue = resourceTimingObj[0].startTime;
-    resourceTimingObj.forEach(function(resource) {
-        for (fieldKey in resource) {
-            if (typeof resource[fieldKey] == "number" && fieldKey.indexOf('Size') == -1) {
-                resource[fieldKey] = (resource[fieldKey] >= 0 && resource[fieldKey] < shiftValue) ? resource[fieldKey] : resource[fieldKey] - shiftValue;
-            }
-        }
-    });
-
-    return resourceTimingObj;
-}
-
 function compare(a, b) {
     return JSON.stringify(a) == JSON.stringify(b);
 }
@@ -115,11 +99,9 @@ UIPerformanceClient.prototype.parsePerfData = function (data, isFrame) {
         navTiming = this.perfFrameTiming;
     }
 
-    if (compare(navTiming, lastPerfNavTiming) || compare(this.perfFrameTiming, lastPerfNavTiming)) {
-        console.log("[DEBUG] Same page");       
+    if (compare(navTiming, lastPerfNavTiming) || compare(this.perfFrameTiming, lastPerfNavTiming)) {      
 
-        //var resourceDiff = lastPerfResourceTiming.slice(this.lastResourceIndex, lastPerfResourceTiming.length);
-
+        
         if (isFrame) {
             this.lastFrameIndex = currentLastResourceIndex;
         } else {

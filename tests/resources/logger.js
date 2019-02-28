@@ -30,8 +30,7 @@ function Logger(influx_conf, scenario) {
     this.scenario = scenario;
 }
 
-Logger.prototype.logInfo = function (driver, pageName, status) {
-    var isAlert = false;
+Logger.prototype.logInfo = function (driver, pageName, status, isAlert = false) {
     var outer_this = this;
     outer_this.measure(driver, pageName, status, isAlert)
         .then(() => {
@@ -94,9 +93,11 @@ Logger.prototype.measure = function (driver, pageName, status, isAlert) {
 
         driver.executeScript(script).then(perfData => {
 
-            console.log(JSON.stringify(perfData.navigation[0].name));
-
             var diff = outer_this.perf_client.parsePerfData(perfData, isAlert);
+
+            if (!diff.is_page) {
+                pageName = pageName + 'Action';
+            }
 
             var data = ['uiperf', {
                 page: pageName,
