@@ -114,6 +114,11 @@ Demo:                                         # Test Suite
 
       - click:                                        # Click Action (Click specified WebElement)
           xpath: //button[@value='Search']              # locator for WebElement (You can use "xpath" or "css" type of locators)
+
+      - switchToFrame:                                # Switch To Frame Action (Switch to specified frame) 
+          id: exampleIframe                             # locator for Frame (You can use "xpath","css","id" type of locators)
+
+      - switchToDefault: true                         # Switch To Default Action (Switch to default content) 
       
 ```
 
