@@ -18,8 +18,8 @@ Demo: # TestSuite
             - hats
             - shoese
     SearchWithInputData: # TestCase
-        url: https://www.etsy.com/
         steps:
+            - url: https://www.etsy.com/
             - input:
                 xpath: //input[@id='search-query']
                 value: converse
@@ -48,16 +48,10 @@ Demo: # TestSuite
             - check:
                 xpath: //span[@class='etsy-icon footer-logo']
     SwitchToFrame: # TestCase
-        url: https://aframe.io/
         steps:
+            - url: https://aframe.io/
             - switchToFrame:
                 id: exampleIframe
             - check:
                 xpath: //a-entity[@id='logo']
             - switchToDefault: true
-    
-            
-        
-        
-        
-      

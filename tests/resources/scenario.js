@@ -58,7 +58,8 @@ function ScenarioBuilder(test_name, influx_conf, rp) {
 }
 
 const lighthouse_opts = {
-    chromeFlags: ['--show-paint-rects', '--window-size=1440,900']
+    chromeFlags: ['--show-paint-rects', '--window-size=1440,900'],
+    disableDeviceEmulation: true
 };
 
 const capabilities = {
@@ -87,7 +88,7 @@ ScenarioBuilder.prototype.execList = function (driver,scenarioIter, baseUrl, pag
     var locator;
     var lastStep;
 
-    if (scenarioIter == 0){
+    if (scenarioIter == 0 || baseUrl != null || baseUrl != undefined){
         lastStep = driver.get(baseUrl)
     }
 
@@ -255,9 +256,6 @@ ScenarioBuilder.prototype.scn = async function (scenario, iteration, times) {
                     if (page[testSteps][i][testUrl]) {
                         var url = page[testSteps][i][testUrl]
                         stepList[i] = [testUrl, url]
-                        if (baseUrl == null || baseUrl == undefined) {
-                            baseUrl = url
-                        }
                     }
                     if (page[testSteps][i][testInput]) {
                         var inputStep = page[testSteps][i][testInput]
