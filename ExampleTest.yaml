@@ -11,47 +11,66 @@
 #  launch_tags:
 #    - Demo test
 #    - New features
+lighthouseDeviceEmulate:
+ mobile: true
+ desktop: true
 Demo: # TestSuite
-    SearchWithParameters: # TestCase
-        url: https://www.etsy.com/search?q=
-        parameters:
-            - hats
-            - shoese
-    SearchWithInputData: # TestCase
-        url: https://www.etsy.com/
+    MicrosoftHome:
+        url: https://www.microsoft.com
         steps:
-            - input:
-                xpath: //input[@id='search-query']
-                value: converse
-            - check:
-                xpath: //button[@value='Search']
             - click:
-                xpath: //button[@value='Search']
-    LoginIntoService: #TestCase
+                xpath: //div[@class='mectrl_signin mectrl_truncate']
+    MicrosoftLogInEmailForm:
         steps:
-            - click: 
-                xpath: //a[@id='sign-in']
             - check:
-                xpath: //input[@id='join_neu_email_field']
+                xpath: //input[@type='email']
             - input:
-                xpath: //input[@id='join_neu_email_field']
-                value: hupfyn@gmail.com
-            - check:
-                xpath: //input[@id='join_neu_password_field']
-            - input:
-                xpath: //input[@id='join_neu_password_field']
-                value: RootRootRoot
+                xpath: //input[@type='email']
+                value: carrier-perf-ui@outlook.com
             - click:
-                xpath: //button[@value='sign-in']
-    ScrollToElement: # TestCase
+                xpath: //input[@type='submit']
+    MicrosoftLogInPassForm:
         steps:
             - check:
-                xpath: //span[@class='etsy-icon footer-logo']
-    SwitchToFrame: # TestCase
-        url: https://aframe.io/
+                xpath: //input[@type='password']
+            - input:
+                xpath: //input[@type='password']
+                value: perf-ui-pass
+            - click:
+                xpath: //input[@type='submit']
+    MicrosoftLogOut:
         steps:
-            - switchToFrame:
-                id: exampleIframe
+            - click:
+                xpath: //div[contains(text(),'Perf')]
             - check:
-                xpath: //a-entity[@id='logo']
-            - switchToDefault: true
+                xpath: //a[@id='mectrl_viewAccount']
+            - click:
+                xpath: //a[@class='mectrl_resetStyle mectrl_signout mectrl_truncate']
+            - check:
+                xpath: //div[@id='mectrl_headerPicture']
+Demo2:
+ AmazonSearchWithParameters:
+  url: https://www.amazon.com/s?k=
+  parameters:
+   - Fender+Jazz+Bass
+   - Fender+Jaguar
+  check:
+   xpath: //span[contains(text(),'results')]
+ AmazonAdvancedSearch:
+  url: https://www.amazon.com
+  steps:
+   - input:
+      xpath: //input[@id='twotabsearchtextbox']
+      value: mac book pr
+   - check:
+      xpath: //div[@id="issDiv4"]
+   - click:
+      xpath: //div[@id="issDiv4"]
+ AmazonAddItemToCart:
+  steps:
+   - click:
+      xpath: //span[contains(text(),'Apple MacBook Pro (13" Retina, 2.3GHz Dual-Core In')]
+   - check:
+      xpath: //input[@id='add-to-cart-button']
+   - click:
+      xpath: //input[@id='add-to-cart-button']
