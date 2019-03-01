@@ -210,6 +210,7 @@ ScenarioBuilder.prototype.analyseAndReportResult = function (driver, page_name, 
 ScenarioBuilder.prototype.scn = async function (scenario, iteration, times) {
 
     var outer_this = this;
+    var baseUrl
 
     var driver = new Builder().withCapabilities(capabilities)
         .setAlertBehavior('accept')
