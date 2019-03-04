@@ -66,11 +66,3 @@ Demo2:
       xpath: //div[@id="issDiv4"]
    - click:
       xpath: //div[@id="issDiv4"]
- AmazonAddItemToCart:
-  steps:
-   - click:
-      xpath: //span[contains(text(),'Apple MacBook Pro (13" Retina, 2.3GHz Dual-Core In')]
-   - check:
-      xpath: //input[@id='add-to-cart-button']
-   - click:
-      xpath: //input[@id='add-to-cart-button']
