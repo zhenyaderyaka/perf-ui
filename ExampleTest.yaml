@@ -49,20 +49,20 @@ Demo: # TestSuite
             - check:
                 xpath: //div[@id='mectrl_headerPicture']
 Demo2:
- AmazonSearchWithParameters:
-  url: https://www.amazon.com/s?k=
-  parameters:
-   - Fender+Jazz+Bass
-   - Fender+Jaguar
-  check:
-   xpath: //span[contains(text(),'results')]
- AmazonAdvancedSearch:
-  url: https://www.amazon.com
-  steps:
-   - input:
-      xpath: //input[@id='twotabsearchtextbox']
-      value: mac book pr
-   - check:
-      xpath: //div[@id="issDiv4"]
-   - click:
-      xpath: //div[@id="issDiv4"]
+    AmazonSearchWithParameters:
+        url: https://www.amazon.com/s?k=
+        parameters:
+            - Fender+Jazz+Bass
+            - Fender+Jaguar
+        check:
+            xpath: //span[contains(text(),'results')]
+    AmazonAdvancedSearch:
+        url: https://www.amazon.com
+        steps:
+            - input:
+                xpath: //input[@id='twotabsearchtextbox']
+                value: mac book pr
+            - check:
+                xpath: //div[@id="issDiv4"]
+            - click:
+                xpath: //div[@id="issDiv4"]

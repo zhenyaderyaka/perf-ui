@@ -72,6 +72,12 @@ influxdb:
 #  - project
 #  - launch_name
 
+# Lighthouse tool config (not required)
+# Lighthouse config example:
+lighthouseDeviceEmulate:                                   
+   mobile: (false|true)                     # Enable or disable audit for mobile version               
+   desktop: (false|true)                    # Enable or disable audit for desktop device
+
 # ReportPortal config example:
 reportportal:                               
    url: https://rp_url/api/v1               # ReportPortal API url
