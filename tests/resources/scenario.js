@@ -77,7 +77,7 @@ const capabilities = {
     }
 }
 
-ScenarioBuilder.prototype.testStep_v1 = function (driver, page_name, baseUrl, parameters, pageCheck, stepList, waiter, iteration, scenarioIter, targetUrl) {
+ScenarioBuilder.prototype.testStep_v1 = async function (driver, page_name, baseUrl, parameters, pageCheck, stepList, waiter, iteration, scenarioIter, targetUrl) {
     var page_name = page_name.replace(/[^a-zA-Z0-9_]+/g, '_')
     var lh_name = `${page_name}_lh_${iteration}`
     var status = 'ok';
@@ -85,75 +85,78 @@ ScenarioBuilder.prototype.testStep_v1 = function (driver, page_name, baseUrl, pa
 
     console.log("\nOpening %s TestCase (%d)", page_name, iteration)
 
-    return driver.sleep(1).then(()=>outer_this.execList(driver, scenarioIter, baseUrl, pageCheck, stepList, waiter, targetUrl))
+    await driver.sleep(200).then(()=>outer_this.execList(driver, scenarioIter, baseUrl, pageCheck, stepList, waiter, targetUrl))
                     .catch((error) => outer_this.errorHandler(driver, page_name, error, baseUrl, parameters, lh_name, status))
                     .then((status) => outer_this.analyseAndReportResult(driver, page_name, baseUrl, parameters, lh_name, status))
 }
 
-ScenarioBuilder.prototype.execList = function (driver,scenarioIter, baseUrl, pageCheck, stepList, waiter, targetUrl) {
+ScenarioBuilder.prototype.execList = async function (driver,scenarioIter, baseUrl, pageCheck, stepList, waiter, targetUrl) {
 
     var locator;
     var lastStep;
+    var actionStep;
 
     if (scenarioIter == 0 || targetUrl!=baseUrl){
-        lastStep = driver.get(baseUrl)
+        await driver.get(baseUrl)
     }
 
-    for (i = 0; i < stepList.length; i++) {
-        if (stepList[i] == undefined || stepList[i] == null) {
+
+    for(let step in stepList){
+        actionStep = stepList[step]
+        console.log(actionStep[0])
+        if (actionStep == undefined || actionStep == null){
             continue;
         }
-        if (stepList[i][0] == 'url') {
-            var targetUrl = stepList[i][1]
-            lastStep = driver.get(targetUrl)
-        }
-        if (stepList[i][0] == 'input') {
-            if (stepList[i][1] == 'xpath') {
-                locator = By.xpath(stepList[i][2])
-            } else {
-                locator = By.css(stepList[i][2])
+        if (actionStep[0] == 'input'){
+            if (actionStep[1]== 'xpath'){
+                locator = By.xpath(actionStep[2])
             }
-            var value = stepList[i][3]
-            var inputField = driver.findElement(locator)
-            if (inputField.getText != "") {
-                inputField.clear()
+            else{
+                locator = By.css(actionStep[2])
             }
-            lastStep = inputField.sendKeys(value);
+            value = actionStep[3]
+            await driver.findElement(locator).sendKeys(value)
         }
-        if (stepList[i][0] == 'click') {
-            if (stepList[i][1] == 'xpath') {
-                locator = By.xpath(stepList[i][2])
-            } else {
-                locator = By.css(stepList[i][2])
+        if (actionStep[0] == 'check'){
+            if (actionStep[1]== 'xpath'){
+                locator = By.xpath(actionStep[2])
             }
-            var clickElement = driver.findElement(locator)
-            lastStep = clickElement.click()
-        }
-        if (stepList[i][0] == 'check') {
-            if (stepList[i][1] == 'xpath') {
-                locator = By.xpath(stepList[i][2])
-            } else {
-                locator = By.css(stepList[i][2])
+            else{
+                locator = By.css(actionStep[2])
             }
-            var firstWait = waiter.waitFor(locator).then(() => waiter.waitUntilVisible(locator))
-            lastStep = driver.executeScript("arguments[0].scrollIntoView();", firstWait)
+            value = actionStep[3]
+            await waiter.waitFor(locator).then(()=> waiter.waitUntilVisible(locator)).then((element)=> driver.executeScript('arguments[0].scrollIntoView();',element))
+            
         }
-        if (stepList[i][0] == 'switchToFrame') {
-            if (stepList[i][1] == 'id'){
+        if (actionStep[0] == 'click'){
+            if (actionStep[1]== 'xpath'){
+                locator = By.xpath(actionStep[2])
+            }
+            else{
+                locator = By.css(actionStep[2])
+            }
+            value = actionStep[3]
+            await driver.findElement(locator).click()
+        }
+        if (actionStep[0] == 'switchToFrame') {
+            if (actionStep[1] == 'id') {
                 locator = stepList[0][2]
             }
-            if (stepList[i][1] == 'xpath'){
+            if (actionStep[1] == 'xpath') {
                 locator = driver.findElement(By.xpath(stepList[i][2]))
             }
-            if (stepList[i][1] == 'css'){
+            if (actionStep[1] == 'css') {
                 locator = driver.findElement(By.css(stepList[i][2]))
             }
-            lastStep = driver.switchTo().frame(locator)
+            await driver.switchTo().frame(locator)
         }
-        if (stepList[i][0] == 'switchToDefault'){
-            if (stepList[i][1]){
-                lastStep = driver.switchTo().defaultContent()
+        if (actionStep[0] == 'switchToDefault') {
+            if (sactionStep[1]) {
+                await driver.switchTo().defaultContent()
             }
+        }
+        if (actionStep[0] == 'url'){
+            await driver.get(actionStep[1])
         }
     }
     if (pageCheck != null || pageCheck != undefined) {
@@ -162,7 +165,7 @@ ScenarioBuilder.prototype.execList = function (driver,scenarioIter, baseUrl, pag
         } else {
             locator = By.css(pageCheck['css'])
         }
-        lastStep = waiter.waitFor(locator).then(() => waiter.waitUntilVisible(locator))
+        await waiter.waitFor(locator).catch(()=> waiter.waitUntilVisible(locator))
     }
     lastStep = driver.sleep(2000)
     return lastStep
@@ -219,9 +222,7 @@ ScenarioBuilder.prototype.analyseAndReportResult = function (driver, page_name, 
                 outer_this.lighthouse.startLighthouse(lh_name_desktop, lighthouse_opts, driver, this.testName);
             }
         }
-        // else{
-        //     outer_this.lighthouse.startLighthouse(lh_name, lighthouse_opts, driver, this.testName);
-        // }
+
         outer_this.junit.successCase(page_name)
     }
     if (outer_this.logger) {
@@ -355,7 +356,7 @@ ScenarioBuilder.prototype.scn = async function (scenario, iteration, times) {
             targetUrl = baseUrl
         }
     } catch (error) {
-        console.log(error)
+        // console.log(error)
         outer_this.junit.errorCase(error)
         driver.close();
     } finally {
