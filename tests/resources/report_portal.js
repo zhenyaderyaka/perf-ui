@@ -20,16 +20,16 @@ var utils = require('./utils')
 
 function ReportPortal(config) {
     this.rpClient = new RPClient({
-        token: config['token'],
-        endpoint: config['url'],
-        project: config['project'],
+        token: config['rp_token'],
+        endpoint: "https://"+ config['rp_host']+ "/api/v1",
+        project: config['rp_project_name'],
         debug: false
     });
     this.errors = {}
     this.success_pages = {}
-    this.launch_name = config['launch_name']
-    if (config['launch_tags'] != null && config['launch_name'] != undefined) {
-        this.launch_tags = config['launch_tags']
+    this.launch_name = config['rp_launch_name']
+    if (config['rp_launch_tags'] != null && config['rp_launch_name'] != undefined) {
+        this.launch_tags = config['rp_launch_tags']
     }
     this.image_path = `/tmp/reports/screenshots/`;
     this.lh_path = `/tmp/reports/lighthouse_pages/`;

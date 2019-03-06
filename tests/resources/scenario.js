@@ -93,7 +93,6 @@ ScenarioBuilder.prototype.testStep_v1 = async function (driver, page_name, baseU
 ScenarioBuilder.prototype.execList = async function (driver,scenarioIter, baseUrl, pageCheck, stepList, waiter, targetUrl) {
 
     var locator;
-    var lastStep;
     var actionStep;
 
     if (scenarioIter == 0 || targetUrl!=baseUrl){
@@ -157,6 +156,7 @@ ScenarioBuilder.prototype.execList = async function (driver,scenarioIter, baseUr
         }
         if (actionStep[0] == 'url'){
             await driver.get(actionStep[1])
+            await driver.sleep(1000)
         }
     }
     if (pageCheck != null || pageCheck != undefined) {
@@ -165,10 +165,9 @@ ScenarioBuilder.prototype.execList = async function (driver,scenarioIter, baseUr
         } else {
             locator = By.css(pageCheck['css'])
         }
-        await waiter.waitFor(locator).catch(()=> waiter.waitUntilVisible(locator))
+        await waiter.waitFor(locator).then(()=> waiter.waitUntilVisible(locator)).then((element)=> driver.executeScript('arguments[0].scrollIntoView();',element))
     }
-    lastStep = driver.sleep(2000)
-    return lastStep
+    await driver.sleep(2000)
 }
 
 ScenarioBuilder.prototype.errorHandler = function (driver, page_name, error, pageUrl, param, lh_name, status) {
@@ -356,7 +355,6 @@ ScenarioBuilder.prototype.scn = async function (scenario, iteration, times) {
             targetUrl = baseUrl
         }
     } catch (error) {
-        // console.log(error)
         outer_this.junit.errorCase(error)
         driver.close();
     } finally {
