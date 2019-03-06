@@ -102,7 +102,6 @@ ScenarioBuilder.prototype.execList = async function (driver,scenarioIter, baseUr
 
     for(let step in stepList){
         actionStep = stepList[step]
-        console.log(actionStep[0])
         if (actionStep == undefined || actionStep == null){
             continue;
         }
