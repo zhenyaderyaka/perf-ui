@@ -101,7 +101,7 @@ ReportPortal.prototype.sendTestLogWithFile = function (step, file_path, file_nam
     })
 }
 
-ReportPortal.prototype.reportIssue = function (error, domain, url_path, page_name, driver, lh_name_mobile, lh_name_desktop) {
+ReportPortal.prototype.reportIssue =async function (error, domain, url_path, page_name, driver, lh_name_mobile, lh_name_desktop) {
     var outer_this = this;
     var status = 'ko';
     var err_message = "Open " + page_name + " failed"
@@ -111,7 +111,7 @@ ReportPortal.prototype.reportIssue = function (error, domain, url_path, page_nam
 
     var step = outer_this.startItem(page_name, err_message, [page_name, domain])
 
-    utils.takeScreenshot(driver, image_name)
+    await utils.takeScreenshot(driver, image_name)
         .then(() => outer_this.sendTestLogWithFile(step, outer_this.image_path, `${image_name}.png`, "image/png", `Screenshot: ${image_name}.png`))
         .catch(error => console.log("Failed to load screenshot.\n" + error))
         .then(() => {
@@ -142,14 +142,14 @@ ReportPortal.prototype.reportIssue = function (error, domain, url_path, page_nam
     })
 }
 
-ReportPortal.prototype.reportResult = function (page_name, url, path, driver, lh_name_mobile, lh_name_desktop) {
+ReportPortal.prototype.reportResult =async function (page_name, url, path, driver, lh_name_mobile, lh_name_desktop) {
     var outer_this = this;
     var tmp = new Date().getTime();
     var image_name = `${page_name}_${tmp}`
 
     var step = outer_this.startItem(page_name, `Results for ${page_name}`, [page_name, url]);
 
-    utils.takeScreenshot(driver, image_name)
+    await utils.takeScreenshot(driver, image_name)
         .then(() => outer_this.sendTestLog(step, 'INFO', `Page name: ${page_name}`))
         .then(() => outer_this.sendTestLog(step, 'INFO', `URL: ${url}`))
         .then(() => {

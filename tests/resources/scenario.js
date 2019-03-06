@@ -44,12 +44,17 @@ const {
 var utils = require('./utils')
 var JUnitBuilder = require('./junit_reporter')
 var lightHouseArr
+var trigger
 
 function ScenarioBuilder(test_name, influx_conf, rp, lightHouseDevice) {
     this.testName = test_name.replace(/\.y.?ml/g, '')
     if (influx_conf && influx_conf['url'] != null) {
-        this.logger = new Logger(influx_conf, this.testName)
+        trigger = true;
     }
+    else {
+        trigger = false;
+    }
+    this.logger = new Logger(influx_conf, this.testName, trigger)
     if (rp) {
         this.rp = rp
     }
@@ -82,10 +87,9 @@ ScenarioBuilder.prototype.testStep_v1 = async function (driver, page_name, baseU
     var lh_name = `${page_name}_lh_${iteration}`
     var status = 'ok';
     var outer_this = this;
-
-    console.log("\nOpening %s TestCase (%d)", page_name, iteration)
-
-    await driver.sleep(200).then(()=>outer_this.execList(driver, scenarioIter, baseUrl, pageCheck, stepList, waiter, targetUrl))
+    await driver.sleep(200)
+                    .then(()=>{console.log("\nOpening %s TestCase (%d)", page_name, iteration)})
+                    .then(() => outer_this.execList(driver, scenarioIter, baseUrl, pageCheck, stepList, waiter, targetUrl))
                     .catch((error) => outer_this.errorHandler(driver, page_name, error, baseUrl, parameters, lh_name, status))
                     .then((status) => outer_this.analyseAndReportResult(driver, page_name, baseUrl, parameters, lh_name, status))
 }
@@ -169,67 +173,61 @@ ScenarioBuilder.prototype.execList = async function (driver,scenarioIter, baseUr
     await driver.sleep(2000)
 }
 
-ScenarioBuilder.prototype.errorHandler = function (driver, page_name, error, pageUrl, param, lh_name, status) {
+ScenarioBuilder.prototype.errorHandler =async function (driver, page_name, error, pageUrl, param, lh_name, status) {
     console.log(`Test Case ${page_name} failed.`)
     status = 'ko';
     var outer_this = this;
 
-    if (!outer_this.logger && !outer_this.rp) {
-        utils.takeScreenshot(driver, `${page_name}_Failed`)
+    await utils.takeScreenshot(driver, `${page_name}_Failed`)
+    
+    if (outer_this.logger) {
+        await outer_this.logger.logError(error, pageUrl, page_name, param)
     }
-
     if (lightHouseArr != undefined || lightHouseArr != null) {
         if (lightHouseArr['mobile']) {
             var lh_name_mobile = lh_name + "_mobile"
-            outer_this.lighthouse.startLighthouse(lh_name_mobile, lighthouse_opts_mobile, driver, this.testName);
+            await outer_this.lighthouse.startLighthouse(lh_name_mobile, lighthouse_opts_mobile, driver, this.testName);
         }
         if (lightHouseArr['desktop']) {
             var lh_name_desktop = lh_name + "_desktop"
-            outer_this.lighthouse.startLighthouse(lh_name_desktop, lighthouse_opts, driver, this.testName);
+            await outer_this.lighthouse.startLighthouse(lh_name_desktop, lighthouse_opts, driver, this.testName);
         }
     }
-
-    if (outer_this.logger) {
-        utils.takeScreenshot(driver, `${page_name}_Failed`)
-        outer_this.logger.logError(error, pageUrl, page_name, param)
-    }
     if (outer_this.rp) {
-        outer_this.rp.reportIssue(error, pageUrl, param, page_name, driver, lh_name_mobile, lh_name_desktop)
+        await outer_this.rp.reportIssue(error, pageUrl, param, page_name, driver, lh_name_mobile, lh_name_desktop)
     }
-    outer_this.junit.failCase(page_name, error)
+    await outer_this.junit.failCase(page_name, error)
 
     return status
 }
-ScenarioBuilder.prototype.analyseAndReportResult = function (driver, page_name, pageUrl, param, lh_name, status) {
+ScenarioBuilder.prototype.analyseAndReportResult =async function (driver, page_name, pageUrl, param, lh_name, status) {
     var outer_this = this;
+
     console.log(`Starting Analyse ${page_name}.`)
     if (status == null || status == undefined) {
         status = 'ok'
     }
-    if (!outer_this.logger && !outer_this.rp && status != 'ko') {
+    if (status != 'ko') {
         utils.takeScreenshot(driver, page_name)
     }
-    if (status != 'ko') {
+   
+    var isAction = await outer_this.logger.logInfo(driver, page_name, status)
+    await driver.executeScript('performance.clearResourceTimings()');
+    if (status != 'ko' && !isAction) {
         if (lightHouseArr != undefined || lightHouseArr != null) {
             if (lightHouseArr['mobile']) {
                 var lh_name_mobile = lh_name + "_mobile"
-                outer_this.lighthouse.startLighthouse(lh_name_mobile, lighthouse_opts_mobile, driver, this.testName);
+                await outer_this.lighthouse.startLighthouse(lh_name_mobile, lighthouse_opts_mobile, driver, this.testName);
             }
             if (lightHouseArr['desktop']) {
                 var lh_name_desktop = lh_name + "_desktop"
-                outer_this.lighthouse.startLighthouse(lh_name_desktop, lighthouse_opts, driver, this.testName);
+                await outer_this.lighthouse.startLighthouse(lh_name_desktop, lighthouse_opts, driver, this.testName);
             }
         }
         outer_this.junit.successCase(page_name)
     }
-    if (outer_this.logger) {
-        if (status != 'ko') {
-            utils.takeScreenshot(driver, page_name)
-        }
-        outer_this.logger.logInfo(driver, page_name, status)
-    }
     if (outer_this.rp && status != 'ko') {
-        outer_this.rp.reportResult(page_name, pageUrl, param, driver, lh_name_mobile, lh_name_desktop)
+        await outer_this.rp.reportResult(page_name, pageUrl, param, driver, lh_name_mobile, lh_name_desktop)
     }
 }
 
@@ -354,7 +352,6 @@ ScenarioBuilder.prototype.scn = async function (scenario, iteration, times) {
         }
     } catch (error) {
         outer_this.junit.errorCase(error)
-        driver.close();
     } finally {
         if (iteration == (times)) {
             if (outer_this.rp) {
