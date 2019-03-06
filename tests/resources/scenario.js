@@ -221,7 +221,6 @@ ScenarioBuilder.prototype.analyseAndReportResult = function (driver, page_name, 
                 outer_this.lighthouse.startLighthouse(lh_name_desktop, lighthouse_opts, driver, this.testName);
             }
         }
-
         outer_this.junit.successCase(page_name)
     }
     if (outer_this.logger) {
